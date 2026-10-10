@@ -1,0 +1,12 @@
+{
+  "name": "factiii-skills",
+  "description": "Skills written and reviewed on factiii.com/s/skills.",
+  "owner": { "name": "Factiii" },
+  "plugins": [
+    {
+      "name": "factiii-skills",
+      "source": "./",
+      "description": "Every skill a moderator has approved on factiii.com/s/skills."
+    }
+  ]
+}

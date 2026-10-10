@@ -1,0 +1,46 @@
+name: Sync skills
+
+# Copies factiii.com's approved skills into this repo. The clients tell people
+# when to look here from this schedule (SKILLS_SYNC_MINUTES in the monorepo's
+# shared/all/domains/skills.ts), so change the two together.
+# Manual runs: Actions tab → Sync skills → Run workflow.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-skills
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Copy approved skills
+        run: node scripts/sync.mjs
+
+      - name: Commit what changed
+        run: |
+          git add -A skills README.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync skills from factiii.com"
+          git push
